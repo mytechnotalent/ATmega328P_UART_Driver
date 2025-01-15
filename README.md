@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/mytechnotalent/ATmega328P_IO_Driver/refs/heads/main/ATmega328P%20UART%20Driver.png">
+<img src="https://raw.githubusercontent.com/mytechnotalent/ATmega328P_UART_Driver/refs/heads/main/ATmega328P%20UART%20Driver.png">
 
 ## FREE Reverse Engineering Self-Study Course [HERE](https://github.com/mytechnotalent/Reverse-Engineering-Tutorial)
 
