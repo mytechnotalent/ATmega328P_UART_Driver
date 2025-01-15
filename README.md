@@ -12,7 +12,7 @@ An ATmega328P UART driver written entirely in Assembler.
 # Code
 ```assembler
 ; ===================================================================
-; Project: ATmega328P IO Driver
+; Project: ATmega328P UART Driver
 ; ===================================================================
 ; Author: Kevin Thomas
 ; E-Mail: ket189@pitt.edu
