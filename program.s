@@ -54,15 +54,15 @@
 ;               6.90 RJMP – Relative Jump
 ; ===================================================================
 program:
-  rcall  config_pins              ; config pins
-  rcall  uart_init                ; uart init
+  RCALL  Config_Pins              ; config pins
+  RCALL  UART_Init                ; UART init
 program_loop:
-  rcall  check_button             ; check button state; control LED
-  rcall  poll_uart                ; non-blocking check; incoming char
-  rjmp   program_loop             ; infinite loop
+  RCALL  Check_Button             ; check button state; control LED
+  RCALL  Poll_UART                ; non-blocking check; incoming char
+  RJMP   program_loop             ; infinite loop
 
 ; ===================================================================
-; SUBROUTINE: config_pins
+; SUBROUTINE: Config_Pins
 ; ===================================================================
 ; Description: Main configuration of pins on the ATmega128P Arduino 
 ;              Nano.
@@ -73,13 +73,13 @@ program_loop:
 ;               6.88 RET – Return from Subroutine
 ; ===================================================================
 config_pins:
-  cbi    DDRD, PD2                ; set PD2 as input (button pin)
-  sbi    PORTD, PD2               ; enable pull-up resistor on PD2
-  sbi    DDRD, PD4                ; set PD4 as output (LED pin)
-  ret                             ; return from subroutine
+  CBI    DDRD, PD2                ; set PD2 as input (button pin)
+  SBI    PORTD, PD2               ; enable pull-up resistor on PD2
+  SBI    DDRD, PD4                ; set PD4 as output (LED pin)
+  RET                             ; return from subroutine
 
 ; ===================================================================
-; SUBROUTINE: uart_init
+; SUBROUTINE: UART_Init
 ; ===================================================================
 ; Description: Initializes UART0 for serial communication at 9600 baud, 
 ;              8 data bits, no parity, 1 stop bit.
@@ -90,21 +90,21 @@ config_pins:
 ;               6.83 ORI – Logical OR with Immediate
 ;               6.88 RET – Return from Subroutine
 ; ===================================================================
-uart_init:
-  ldi    r16, 103                ; set 9600 baud rate low byte
-  sts    UBRR0L, r16             ; store in UBRR0L
-  ldi    r16, 0                  ; set 9600 baud rate high byte
-  sts    UBRR0H, r16             ; store in UBRR0H
-  ldi    r16, (1 << RXEN0)       ; enable RX (Receiver Enable)
-  ori    r16, (1 << TXEN0)       ; enable TX (Transmitter Enable)
-  sts    UCSR0B, r16             ; store in UCSR0B
-  ldi    r16, (1 << UCSZ00)      ; set UCSZ00 (Bit 2) for 8 data bits
-  ori    r16, (1 << UCSZ01)      ; set UCSZ01 (Bit 1) for 8 data bits
-  sts    UCSR0C, r16             ; store in UCSR0C
-  ret                            ; return from subroutine
+UART_Init:
+  LDI    R16, 103                ; set 9600 baud rate low byte
+  STS    UBRR0L, R16             ; store in UBRR0L
+  LDI    R16, 0                  ; set 9600 baud rate high byte
+  STS    UBRR0H, R16             ; store in UBRR0H
+  LDI    R16, (1 << RXEN0)       ; enable RX (Receiver Enable)
+  ORI    R16, (1 << TXEN0)       ; enable TX (Transmitter Enable)
+  STS    UCSR0B, R16             ; store in UCSR0B
+  LDI    R16, (1 << UCSZ00)      ; set UCSZ00 (Bit 2) for 8 data bits
+  ORI    R16, (1 << UCSZ01)      ; set UCSZ01 (Bit 1) for 8 data bits
+  STS    UCSR0C, R16             ; store in UCSR0C
+  RET                            ; return from subroutine
 
 ; ===================================================================
-; SUBROUTINE: check_button
+; SUBROUTINE: Check_Button
 ; ===================================================================
 ; Description: Checks if PD2 is pressed and if so, drive LED high,
 ;              otherwise drive LED low.
@@ -114,15 +114,15 @@ uart_init:
 ;               6.96 SBIC – Skip if Bit in I/O Register is Cleared
 ;               6.88 RET – Return from Subroutine
 ; ===================================================================
-check_button:
-  sbis   PIND, PD2                ; skip next inst if PD2 is high
-  rcall  led_on                   ; if PD2 is low; BTN pressed
-  sbic   PIND, PD2                ; skip next inst if PD2 is low
-  rcall  led_off                  ; if PD2 is high; BTN not pressed
-  ret                             ; return from subroutine
+Check_Button:
+  SBIS   PIND, PD2                ; skip next inst if PD2 is high
+  RCALL  LED_On                   ; if PD2 is low; BTN pressed
+  SBIS   PIND, PD2                ; skip next inst if PD2 is low
+  RCALL  LED_Off                  ; if PD2 is high; BTN not pressed
+  RET                             ; return from subroutine
 
 ; ===================================================================
-; SUBROUTINE: led_on
+; SUBROUTINE: LED_On
 ; ===================================================================
 ; Description: Sets PB5 high to turn on the LED.
 ; -------------------------------------------------------------------
@@ -131,11 +131,11 @@ check_button:
 ;               6.88 RET – Return from Subroutine
 ; ===================================================================
 led_on:
-  sbi    PORTD, PD4               ; set PD4 high
-  ret                             ; return from subroutine
+  SBI    PORTD, PD4               ; set PD4 high
+  RET                             ; return from subroutine
 
 ; ===================================================================
-; SUBROUTINE: led_off
+; SUBROUTINE: LED_Off
 ; ===================================================================
 ; Description: Clears PB5 to turn off the LED.
 ; -------------------------------------------------------------------
@@ -143,12 +143,12 @@ led_on:
 ;               6.33 CBI – Clear Bit in I/O Register
 ;               6.88 RET – Return from Subroutine
 ; ===================================================================
-led_off:
-  cbi    PORTD, PD4               ; set PD4 low
-  ret                             ; return from subroutine
+LED_Off:
+  CBI    PORTD, PD4               ; set PD4 low
+  RET                             ; return from subroutine
 
 ; ===================================================================
-; SUBROUTINE: poll_uart
+; SUBROUTINE: Poll_UART
 ; ===================================================================
 ; Description: Non-blocking UART polling. If a byte arrives, it is 
 ;              echoed back via UART.
@@ -159,14 +159,14 @@ led_off:
 ;               6.88 RET – Return from Subroutine
 ;               6.115 STS – Store Direct to Data Space
 ; ===================================================================
-poll_uart:
-  lds    r16, UCSR0A             ; load UCSR0A
-  sbrs   r16, RXC0               ; skip next if RXC0 is set; has data
-  ret                            ; return from subroutine
-  lds    r16, UDR0               ; read received byte from UDR0
-.poll_tx_wait:
-  lds    r17, UCSR0A             ; load UCSR0A
-  sbrs   r17, UDRE0              ; skip next if UDRE0 is set; buf rdy
-  rjmp   .poll_tx_wait           ; wait until buffer is ready
-  sts    UDR0, r16               ; write byte to UDR0 (transmit)
-  ret                            ; return from subroutine
+Poll_UART:
+  LDS    R16, UCSR0A             ; load UCSR0A
+  SBRS   R16, RXC0               ; skip next if RXC0 is set; has data
+  RET                            ; return from subroutine
+  LDS    R16, UDR0               ; read received byte from UDR0
+.Poll_TX_Wait:
+  LDS    R17, UCSR0A             ; load UCSR0A
+  SBRS   R17, UDRE0              ; skip next if UDRE0 is set; buf rdy
+  RJMP   .Poll_TX_Wait           ; wait until buffer is ready
+  STS    UDR0, R16               ; write byte to UDR0 (transmit)
+  RET                            ; return from subroutine
